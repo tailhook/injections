@@ -21,12 +21,10 @@ You must decorate class with ``@injections.has``. All dependencies has a
 type(class), which is ``World`` in this case, and a name, which is ``universe``
 in this case. This is for having multiple similar dependencies.
 
-.. note::
-
-    Name of dependency is unique among all services in single dependency
-    injector and not tied to particular type. This is done to easier support
-    subclassing of dependencies (and you can also register subclass with abc
-    instead of subclassing directly)
+Note: Name of dependency is unique among all services in single dependency
+injector and not tied to particular type. This is done to easier support
+subclassing of dependencies (and you can also register subclass with abc
+instead of subclassing directly)
 
 Then at some initialisation code you create dependency injector, and set
 apropriate services::
@@ -67,9 +65,9 @@ it in the ``__injected__`` method too::
             self.child = injections.propagate(self, Child())
 
 
-.. note:: In the last two examples where name is omitted, it's got from
-   the name of the attribute to assign to. It's used to avoid repetitive
-   typing, but may be error prone.
+Note: In the last two examples where name is omitted, it's got from
+the name of the attribute to assign to. It's used to avoid repetitive
+typing, but may be error prone.
 
 
 Cyclic Dependencies
@@ -106,11 +104,11 @@ This will call ``inj.inject`` for all objects in container in proper order
 container sealed, so you can add more dependencies later, and interconnect new
 ones too.
 
-.. note:: Cyclic dependencies are not processed by ``interconnect_all``, so you
-   must either do ``inject()`` for them (in proper order) 'before' calling
-   interconnect, or 'add' them to the container 'after'.  In any case
-   'injections' will not try to guess, but will fail with runtime exception if
-   can't find out proper order.
+Note: Cyclic dependencies are not processed by ``interconnect_all``, so you
+must either do ``inject()`` for them (in proper order) *before* calling
+interconnect, or *add* them to the container *after*.  In any case
+*injections* will not try to guess, but will fail with runtime exception if
+can't find out proper order.
 
 
 History
