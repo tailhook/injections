@@ -51,8 +51,55 @@ class TestCore(TestCase):
         c = di.Container()
         c['cache'] = Cache()
         c['processor'] = Processor()
-        with self.assertRaises(RuntimeError):
+        try:
             c.interconnect_all()
+        except RuntimeError as e:
+            self.assertSetEqual({'cache', 'processor'},
+                set(e.objects_in_cycle.keys()))
+        else:
+            raise AssertionError("Exception not raised")
+
+    def test_larger_cycle(self):
+
+        @di.has
+        class Y(object):
+            pass
+
+        @di.has
+        class A(object):
+             b = di.depends(object, 'b')
+             y = di.depends(Y, 'y')
+
+        @di.has
+        class B(object):
+             c = di.depends(object, 'c')
+
+        @di.has
+        class C(object):
+             a = di.depends(object, 'a')
+
+        @di.has
+        class X(object):
+             a = di.depends(object, 'a')
+
+        @di.has
+        class Z(object):
+             x = di.depends(object, 'x')
+
+        c = di.Container()
+        c['a'] = A()
+        c['b'] = B()
+        c['c'] = C()
+        c['x'] = X()
+        c['y'] = Y()
+        c['z'] = Z()
+        try:
+            c.interconnect_all()
+        except RuntimeError as e:
+            self.assertSetEqual({'a', 'b', 'c'},
+                set(e.objects_in_cycle.keys()))
+        else:
+            raise AssertionError("Exception not raised")
 
     def test_clone(self):
         @di.has
