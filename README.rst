@@ -72,6 +72,47 @@ it in the ``__injected__`` method too::
    typing, but may be error prone.
 
 
+Cyclic Dependencies
+===================
+
+
+Dependencies between objects might be cyclic as long as object don't use
+each other in ``__injected__`` method. To handle cyclic depencency between
+classes ``A`` and ``B`` use code similar to the following:
+
+.. code-block:: python
+
+   inj['a'] = A()
+   inj['b'] = B()
+   inj.inject(inj['a'])
+   inj.inject(inj['b'])
+
+
+Automatic Interconnection (experimental)
+========================================
+
+Sometimes it's useful to omit ``inject()`` calls for the objects put in
+container, and then connect them all using ``interconnect_all()``:
+
+.. code-block:: python
+
+   inj['a'] = A()
+   inj['b'] = B()
+   inj['c'] = C()
+   inj.interconnect_all()
+
+This will call ``inj.inject`` for all objects in container in proper order
+(using topology sort based on their dependencies). It doesn't make your
+container sealed, so you can add more dependencies later, and interconnect new
+ones too.
+
+.. note:: Cyclic dependencies are not processed by ``interconnect_all``, so you
+   must either do ``inject()`` for them (in proper order) 'before' calling
+   interconnect, or 'add' them to the container 'after'.  In any case
+   'injections' will not try to guess, but will fail with runtime exception if
+   can't find out proper order.
+
+
 History
 =======
 
