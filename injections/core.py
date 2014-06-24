@@ -10,7 +10,7 @@ Declare a class' dependencies::
 
         world = injections.depends(World, 'universe')
 
-You must decorate class with ``@has_dependencies``. All dependencies has a
+You must decorate class with ``@injections.has``. All dependencies has a
 type(class), which is ``World`` in this case, and a name, which is ``universe``
 in this case. This is for having multiple similar dependencies.
 
@@ -38,6 +38,9 @@ And you can propagate dependencies starting from existing instances::
     assert h2.world is hello.world
 
 """
+
+from .topsort import topologically_sorted
+
 
 def has(cls):
     """Class decorator that declares dependencies"""
@@ -128,10 +131,16 @@ class Container(object):
             pro[name] = mypro[alias]
         return di
 
+    def interconnect_all(self):
+        """Propagate dependencies for provided instances"""
+        for dep in topologically_sorted(self._provides):
+            if hasattr(dep, '__injections__') and not hasattr(dep, '__injections_source__'):
+                self.inject(dep)
+
 
 def dependencies(cls):
     """Returns dict of dependencies of a class declared with
-    ``@has_dependencies``
+    ``@injections.has``
     """
     return getattr(cls, '__injections__', {})
 
