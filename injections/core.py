@@ -46,7 +46,9 @@ def has(cls):
     """Class decorator that declares dependencies"""
     deps = {}
     for i in dir(cls):
-        val = getattr(cls, i)
+        if i.startswith('__') and i.endswith('__'):
+            continue
+        val = getattr(cls, i, None)
         if isinstance(val, Dependency):
             deps[i] = val
             if val.name is None:
