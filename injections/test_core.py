@@ -126,3 +126,21 @@ class TestCore(TestCase):
         c['name'] = 1
         with self.assertRaises(TypeError):
             c.inject(self.Consumer())
+
+    def test_missing_dependency(self):
+        c = di.Container()
+        c['a'] = 1
+
+        @di.has
+        class Consumer:
+            a = di.depends(int)
+            b = di.depends(int)
+
+        if hasattr(self, 'assertRaisesRegex'):
+            checker = self.assertRaisesRegex
+        else:
+            checker = self.assertRaisesRegexp
+
+        with checker(di.MissingDependencyError,
+                     "Dependency 'b' is missed in container"):
+            c.inject(Consumer())

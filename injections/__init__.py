@@ -1,6 +1,7 @@
 from .core import (
     Container,
     Dependency,
+    MissingDependencyError,
     has,
     depends,
     propagate,
@@ -11,6 +12,7 @@ from .core import (
 __all__ = [
     'Container',
     'Dependency',
+    'MissingDependencyError',
     'has',
     'depends',
     'propagate',
