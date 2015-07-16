@@ -16,4 +16,5 @@ setup(name='injections',
         'Programming Language :: Python :: 3',
         'Programming Language :: Python :: 2',
         ],
+      license='MIT',
      )

@@ -76,6 +76,13 @@ class Dependency:
 depends = Dependency  # nicer declarative name
 
 
+class MissingDependencyError(KeyError):
+    """Required dependency is missed in container"""
+
+    def __str__(self):
+        return "Dependency {!r} is missed in container".format(self.args[0])
+
+
 class Container(object):
     """Container for things that will be dependency-injected
 
@@ -104,7 +111,10 @@ class Container(object):
         deps = getattr(inst, '__injections__', None)
         if deps:
             for attr, dep in deps.items():
-                val = pro[dep.name]
+                val = pro.get(dep.name)
+                if val is None:
+                    raise MissingDependencyError(dep.name)
+
                 if not isinstance(val, dep.type):
                     raise TypeError("Wrong provider for {!r}".format(val))
                 setattr(inst, attr, val)
